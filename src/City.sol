@@ -64,9 +64,10 @@ contract City is  Ownable, Pausable, IsStarted {
     event NewcityStarted(string cityname,string symbol);
     event Log(string message);
 
-    constructor(string memory cityname_,string memory symbol_) {
+    constructor() {
         _owner = msg.sender;
-
+        string memory cityname_ = "Minimistant";
+        string memory symbol_ = "MINIM";
         name = cityname = cityname_;
         symbol = symbol_;
         _passportName = string(abi.encodePacked(cityname, _suffixPassportName));
@@ -92,8 +93,8 @@ contract City is  Ownable, Pausable, IsStarted {
             
         return citizenIdcard;
     }
-    function joinCity(address address_,string memory _name, string memory _firstname) public whenNotPaused onlyIfStarted {
-        address _address = address_ ;
+    function joinCity(string memory _name, string memory _firstname) public whenNotPaused onlyIfStarted {
+        address _address = msg.sender ;
         require(isCitizen(_address) == false, "ALREADYIN");
         /*
         * Crypter les nom ?
@@ -120,7 +121,6 @@ contract City is  Ownable, Pausable, IsStarted {
         citizen = createCitizen(_address, _name, _firstname);
         citizenRegistry[_address] = citizen;
         waitingPopulation[_address] = true;
-
         agreeCitizenship(_address);
         emit NewCitizenRequest(_address);
     }

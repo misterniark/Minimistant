@@ -37,7 +37,7 @@ contract BaseSetup is Test {
         anne = users[2];
         vm.label(anne, "Anne");
         
-        city = new City(name, symbol);
+        city = new City();
         
        
        
@@ -83,7 +83,7 @@ contract CityTest is BaseSetup {
         pop = city.totalPopulation();
         assertEq(pop, 2);
 
-        city.joinCity(anne, "Brenas","Anne");
+        city.addToCity(anne, "Brenas","Anne");
         pop = city.totalPopulation();
         assertEq(pop, 2);
         
