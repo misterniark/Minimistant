@@ -16,6 +16,8 @@ src
 tests
 └─ City.t.sol — "Test suite for the City"
 ```
+## Todo
+See Todo [here](TODO.md)
 
 ## Requirement
 To get started we need to install the foundry package which requires rust.
