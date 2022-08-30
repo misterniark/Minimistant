@@ -8,7 +8,7 @@ import  {Passport} from "./Passport.sol";
 
 
 /**
-* @title Registry fot network City
+* @title Registry for network City
 * @dev Faucet for burnable ERC721 use as passport for the City
  */
 contract EtatCivil is Pausable, Ownable 
