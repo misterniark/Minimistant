@@ -37,3 +37,7 @@ forge install openzeppelin/openzeppelin-contracts
 git submodule update --init --recursive
 forge install
 ```
+### UI
+```sh
+npm install web3 --save
+```
