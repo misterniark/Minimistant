@@ -3,6 +3,20 @@
 DAO for network City inspire by The Network State fom Balaji S. Srinivasan
 https://thenetworkstate.com/
 
+## Directory structure
+
+```ml
+lib
+├─ forge-std — https://github.com/brockelmore/forge-std
+├─ openzeppelin-contracts — https://github.com/OpenZeppelin/openzeppelin-contracts
+src
+├─ City.sol — "Network City interface implementation"
+├─ EtatCivil.sol — "Registry for network City"
+└─ Passport.sol — "non-transferable, burnable ERC721 use as passport for the City"
+tests
+└─ City.t.sol — "Test suite for the City"
+```
+
 ## Requirement
 To get started we need to install the foundry package which requires rust.
 ```sh
