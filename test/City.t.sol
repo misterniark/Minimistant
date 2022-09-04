@@ -9,6 +9,8 @@ import {stdStorage, StdStorage, Test} from "lib/forge-std/src/Test.sol";
 import {Utils} from "./utils/Utils.sol";
 
 import {City} from "../src/City.sol";
+import {Passport} from "../src/Passport.sol";
+import {EtatCivil} from "../src/EtatCivil.sol";
 
 contract BaseSetup is Test {
    Utils internal utils;
@@ -24,6 +26,8 @@ contract BaseSetup is Test {
     string public name = "Minimistant";
     string public symbol = "MINIM";
 
+    uint256 internal pop;
+    bool _bool;
    
    function setUp() public virtual {
        
@@ -38,6 +42,8 @@ contract BaseSetup is Test {
         vm.label(anne, "Anne");
         
         city = new City();
+        //city.transferOwnership(owner);
+        
         
        
        
@@ -57,24 +63,82 @@ contract CityTest is BaseSetup {
         // assert if the correct symbol was used
         assertEq(city.symbol(), symbol);
 
-
+        
+       
         city.getPassportName();
         city.getPassportSymbol();
-        city.getPassportAddress();
-        city.getEtatCivilAddress();
+        city.getCityAddress();
+
+        
+
 
     }
-    function test_apopulation() public {
-        uint256 pop = city.totalPopulation();
-        assertEq(pop, 0);
+    function test_aownerhip() public{
+       
+        console.log(city.owner());
+        city.cascadeOnershipTransfert(owner);
+     
+        EtatCivil civilowner = EtatCivil(city.getEtatCivilAddress());
+        assertEq(city.owner(), civilowner.owner());
+
+        Passport passowner = Passport(city.getPassportAddress());
+        assertEq(city.owner(), passowner.owner());
+        assertEq(passowner.owner(), civilowner.owner());
+
+        console.log("owner is the owner of City");
+        assertEq(owner, city.owner());
+        console.log("owner is the owner of EtatCivil");
+        assertEq(owner, civilowner.owner());
+        console.log("owner is the owner of passport");
+        assertEq(owner, passowner.owner());
+
+        
+       /* vm.prank(city.owner());
+        city.cascadeOnershipTransfert(marie);
+        assertEq(city.owner(), civilowner.owner());
+        assertEq(city.owner(), passowner.owner());
+        assertEq(marie, civilowner.owner());
+        assertEq(marie, passowner.owner());
+        */
+        
+
+
     }
-    function test_bjoinCity() public {
+    
+    function test_trasfert() public{
+        uint256 idtoken = city.addToCity(owner,"Genty","Mathieu");
+        pop = city.totalPopulation();
+        assertEq(pop, 1);
 
-        bool _bool;
+        city.addToCity(marie, "Pensenti","Marie");
+        pop = city.totalPopulation();
+        assertEq(pop, 2);
 
-        uint256 pop = city.totalPopulation();
+        city.revokeCitizenship(marie);
+        pop = city.totalPopulation();
+        assertEq(pop, 1);
+
+        address testpassportadd = city.getPassportAddress();
+        Passport testpassport = Passport(testpassportadd);
+        
+        vm.expectRevert(abi.encodePacked("ERC721: caller is not token owner or approved"));
+        testpassport.transferFrom(owner,marie,idtoken);
+
+        uint256 nb = testpassport.balanceOf(owner);
+        assertEq(nb, 1);
+
+         nb = testpassport.balanceOf(marie);
+        assertEq(nb, 0);
+
+    }
+    function  test_bjoinCity() public {
+
+        
+
+        pop = city.totalPopulation();
         assertEq(pop, 0);
 
+         /**Test addToCity */
         city.addToCity(owner,"Genty","Mathieu");
         pop = city.totalPopulation();
         assertEq(pop, 1);
@@ -83,17 +147,22 @@ contract CityTest is BaseSetup {
         pop = city.totalPopulation();
         assertEq(pop, 2);
 
-        city.addToCity(anne, "Brenas","Anne");
+        /**Test JoinCity */
+        vm.prank(anne);
+        city.joinCity("Brenas","Anne");
         pop = city.totalPopulation();
         assertEq(pop, 2);
         
+        /**Test Statut */
         string memory  statut = city.getCitizenStatut(anne);
         assertEq(statut, "Pending");
 
+        /**Test agreeCitizenship */
         city.agreeCitizenship(anne);
         pop = city.totalPopulation();
         assertEq(pop, 3);
 
+         /**Test revokeCitizenship */
         city.revokeCitizenship(marie);
         pop = city.totalPopulation();
         assertEq(pop, 2);

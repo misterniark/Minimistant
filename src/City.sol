@@ -48,14 +48,14 @@ contract City is  Ownable, Pausable, IsStarted {
     string public cityname;
     string public name;
     string public symbol;
-    address private _owner;
+ 
 
     string private _passportName;
     string private _passportSymbol;
     string private _suffixPassportName = "Id";
     string private _suffixPassportSymbol = "Id";
  
-    EtatCivil internal etatCivil;
+    EtatCivil public etatCivil;
 
     event NewCitizenRequest(address _adress);
     event NewCitizen(address _adress,uint256 passportId);
@@ -63,9 +63,9 @@ contract City is  Ownable, Pausable, IsStarted {
     event PopulationState(uint population);
     event NewcityStarted(string cityname,string symbol);
     event Log(string message);
+    event IstherealownerOfCity(address);
 
     constructor() {
-        _owner = msg.sender;
         string memory cityname_ = "Minimistant";
         string memory symbol_ = "MINIM";
         name = cityname = cityname_;
@@ -73,7 +73,7 @@ contract City is  Ownable, Pausable, IsStarted {
         _passportName = string(abi.encodePacked(cityname, _suffixPassportName));
         _passportSymbol = string(abi.encodePacked(symbol,_suffixPassportSymbol));
         
-        etatCivil = new EtatCivil(_passportName,_passportSymbol,_owner);
+        etatCivil = new EtatCivil(_passportName,_passportSymbol);
         _start();
         census = 0;
         emit NewcityStarted(cityname, symbol);
@@ -103,13 +103,13 @@ contract City is  Ownable, Pausable, IsStarted {
         citizen = createCitizen(_address, _name, _firstname);
         citizenRegistry[_address] = citizen;
         waitingPopulation[_address] = true;
-        if(_address == _owner) agreeCitizenship(_address);
+        if(_address == owner()) agreeCitizenship(_address);
         emit NewCitizenRequest(_address);
     }
     /**
     fonction qui permet au owner d'ajouter un citizen avec son address
      */
-    function addToCity(address address_,string memory _name, string memory _firstname) public whenNotPaused onlyIfStarted onlyOwner{
+    function addToCity(address address_,string memory _name, string memory _firstname) public whenNotPaused onlyIfStarted onlyOwner  returns(uint256){
         address _address = address_;
         require(isCitizen(_address) == false, "ALREADYIN");
         /*
@@ -121,8 +121,9 @@ contract City is  Ownable, Pausable, IsStarted {
         citizen = createCitizen(_address, _name, _firstname);
         citizenRegistry[_address] = citizen;
         waitingPopulation[_address] = true;
-        agreeCitizenship(_address);
+        uint256 passportid = agreeCitizenship(_address);
         emit NewCitizenRequest(_address);
+        return passportid;
     }
     function agreeCitizenship(address _address) public onlyOwner onlyIfStarted returns(uint256) {
         CitizenIdcard storage citizen;
@@ -207,6 +208,18 @@ contract City is  Ownable, Pausable, IsStarted {
     }
    function getEtatCivilAddress() public view returns(address){
         return etatCivil.getAddress();
+    }
+    function getCityAddress() public view returns(address){
+        return address(this);
+    }
+    function cascadeOnershipTransfert(address newowner)public onlyOwner onlyIfStarted returns(bool){
+        emit IstherealownerOfCity(owner());
+        emit IstherealownerOfCity(msg.sender);
+        require(etatCivil.cascadeOnershipTransfert(newowner)==true);
+        transferOwnership(newowner);
+        emit IstherealownerOfCity(owner());
+        return true;
+
     }
         
 

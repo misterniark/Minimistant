@@ -6,6 +6,7 @@ import {ERC721Enumerable} from "openzeppelin-contracts/contracts/token/ERC721/ex
 import {Ownable} from "openzeppelin-contracts/contracts/access/Ownable.sol";
 import {ERC721Burnable} from "openzeppelin-contracts/contracts/token/ERC721/extensions/ERC721Burnable.sol";
 
+
 /**
 * @title Passport for network City
 * @dev non-transferable, burnable ERC721 use as passport for the City
@@ -16,13 +17,9 @@ contract Passport is ERC721, ERC721Enumerable, Ownable,  ERC721Burnable {
     event NewNFTPassort(address _adress,uint256 passportId);
     event PassortStrated(string _name,string _symbol);
 
-     address private _owner;
 
-
-    constructor( string memory name, string memory symbol, address owner_) ERC721(name,symbol) {
-        _owner = owner_;
-
-        emit PassortStrated(name,symbol);
+    constructor( string memory name, string memory symbol) ERC721(name,symbol) {
+        
     }
 
     function safeMint(address to, uint256 tokenId) external onlyOwner {
@@ -30,6 +27,7 @@ contract Passport is ERC721, ERC721Enumerable, Ownable,  ERC721Burnable {
             balanceOf(to) < 1, "ALREDYHAVEONE"
         );
         _safeMint(to, tokenId);
+        //approval EtatCivil to operate
         _approve(msg.sender, tokenId);
     }
     function safeBurn(uint256 tokenId) external onlyOwner {
@@ -61,6 +59,11 @@ contract Passport is ERC721, ERC721Enumerable, Ownable,  ERC721Burnable {
     }
     function getAddress() public view returns(address){
         return address(this);
+    }
+    function cascadeOnershipTransfert(address newowner)public onlyOwner returns(bool){
+        transferOwnership(newowner);
+        return true;
+
     }
 }
 

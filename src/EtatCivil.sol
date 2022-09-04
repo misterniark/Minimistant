@@ -19,13 +19,12 @@ contract EtatCivil is Pausable, Ownable
     // Token symbol
     string public _symbol;
 
-    address private _owner;
-
     uint256 public numberOfPassport;
 
     // ERC721 Token
     Passport public passport;
 
+    event IstherealownerOfEtatCivil(address);
 
     // Mapping of owners of passport
     mapping(address => uint256) private tokenIdByAddress ;
@@ -36,13 +35,14 @@ contract EtatCivil is Pausable, Ownable
     using Counters for Counters.Counter;
     Counters.Counter private _tokenIds;
 
-    constructor(string memory name, string memory symbol, address  owner_){
-        _owner = owner_;
+    constructor(string memory name, string memory symbol){
+    
+        
         numberOfPassport = 0;
         _name = name;
         _symbol = symbol;
         _tokenIds._value = 1234567;
-        passport = new Passport(name,symbol,_owner);
+        passport = new Passport(name,symbol);
       
     }
     
@@ -94,5 +94,14 @@ contract EtatCivil is Pausable, Ownable
     }
     function getAddress() public view returns(address){
         return address(this);
+    }
+    function cascadeOnershipTransfert(address newowner)public  returns(bool) {
+       emit IstherealownerOfEtatCivil(owner());
+       emit IstherealownerOfEtatCivil(msg.sender);
+        require(passport.cascadeOnershipTransfert(newowner)==true);
+         transferOwnership(newowner);
+          emit IstherealownerOfEtatCivil(owner());
+         return true;
+
     }
 }
