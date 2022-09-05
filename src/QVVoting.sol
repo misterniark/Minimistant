@@ -5,6 +5,8 @@ import {Ownable} from "openzeppelin-contracts/contracts/access/Ownable.sol";
 import {SafeMath} from "openzeppelin-contracts/contracts/utils/math/SafeMath.sol";
 /**
  * @title QVVoting
+ * @author Mathieu Genty
+ * @author AndreiD
  * @dev the manager for proposals / votes
  */
 contract QVVoting is Ownable {
@@ -46,7 +48,7 @@ contract QVVoting is Ownable {
     mapping(uint256 => Proposal) public Proposals;
     uint public ProposalCount;
 
-    constructor() {
+    constructor()  {
         symbol = "QVV";
         name = "QV Voting";
     }
@@ -189,6 +191,9 @@ contract QVVoting is Ownable {
         require(
             getProposalExpirationTime(_ProposalID) > block.timestamp,
             "for this proposal, the voting time expired"
+        );
+        require(_balances[msg.sender] > numTokens ,
+            "Not enought token"
         );
 
         _balances[msg.sender] = _balances[msg.sender].sub(numTokens);

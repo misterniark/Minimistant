@@ -73,7 +73,7 @@ contract CityTest is BaseSetup {
 
 
     }
-    function test_aownerhip() public{
+    function test_ownerhip() public{
        
         console.log(city.owner());
         city.cascadeOnershipTransfert(owner);
@@ -105,7 +105,7 @@ contract CityTest is BaseSetup {
 
     }
     
-    function test_trasfert() public{
+    function test_trasfertMustFail() public{
         uint256 idtoken = city.addToCity(owner,"Genty","Mathieu");
         pop = city.totalPopulation();
         assertEq(pop, 1);
@@ -131,6 +131,49 @@ contract CityTest is BaseSetup {
         assertEq(nb, 0);
 
     }
+    function  test_EncryptjoinCity() public {
+
+        city.setEncryptIdentity(true);
+        city.addToCity(owner,"Genty","Mathieu");
+        pop = city.totalPopulation();
+        assertEq(pop, 1);
+        string memory name;
+        string memory firstname;
+        uint256  keccakIdentity;
+        string memory citizenship;
+        uint256 startTime;
+        uint256 endTime;
+        uint256 passportId;
+        address citizenAddress;
+
+         
+
+         (  name,
+          firstname,
+          keccakIdentity,
+          citizenship,
+         startTime,
+         endTime,
+         passportId,
+         citizenAddress) = 
+        city.getRegistryInfos(owner);
+
+        assertEq(firstname, '');
+        assertEq(name, '');
+        uint256 hashing = uint256(keccak256(abi.encode("Mathieu", "Genty", owner)));
+
+       // assertEq(keccakIdentity, 'hashing');
+
+    }
+    // (string memory name,
+    //     string memory firstname,
+    //     uint256  keccakIdentity,
+    //     string memory citizenship,
+    //     uint256 startTime,
+    //     uint256 endTime,
+    //     uint256 passportId,
+    //     address citizenAddress)
+
     function  test_bjoinCity() public {
 
         

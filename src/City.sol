@@ -23,6 +23,7 @@ contract City is  Ownable, Pausable, IsStarted {
     struct CitizenIdcard{ 
         string name;
         string firstname;
+        uint256  keccakIdentity;
         string citizenship;
         uint256 startTime;
         uint256 endTime;
@@ -48,7 +49,7 @@ contract City is  Ownable, Pausable, IsStarted {
     string public cityname;
     string public name;
     string public symbol;
- 
+    bool private encryptIdentity = false;
 
     string private _passportName;
     string private _passportSymbol;
@@ -85,8 +86,12 @@ contract City is  Ownable, Pausable, IsStarted {
     }
     function createCitizen(address address_,  string memory name_, string memory firstname_) private view whenNotPaused onlyIfStarted returns( CitizenIdcard memory) {
             CitizenIdcard memory citizenIdcard;
+            if(encryptIdentity)
+            citizenIdcard.keccakIdentity = uint256(keccak256(abi.encode(firstname_, name_, address_)));
+            else{
             citizenIdcard.firstname = firstname_;
             citizenIdcard.name = name_;
+            }
             citizenIdcard.citizenship = "Pending";
             citizenIdcard.startTime = block.timestamp;
             citizenIdcard.citizenAddress = address_;
@@ -190,12 +195,47 @@ contract City is  Ownable, Pausable, IsStarted {
         return citizenInfos.citizenship;
 
     }
-    function getRegistryInfos(address _citizen_address) public view returns (CitizenIdcard memory) {
+
+
+    function getRegistryInfos(address _citizen_address) public view returns (
+        string memory,
+        string memory,
+        uint256,
+        string memory,
+        uint256,
+        uint256,
+        uint256,
+        address
+    ) {
         
         CitizenIdcard memory citizenInfos;
         citizenInfos = citizenRegistry[_citizen_address];
-        
-        return (citizenInfos);
+        string memory name = citizenInfos.firstname;
+        string memory firstname = citizenInfos.name;
+        uint256  keccakIdentity = citizenInfos.keccakIdentity;
+        string memory citizenship = citizenInfos.citizenship;
+        uint256 startTime = citizenInfos.startTime;
+        uint256 endTime = citizenInfos.endTime;
+        uint256 passportId = citizenInfos.passportId;
+        address citizenAddress = citizenInfos.citizenAddress;
+
+       return (  
+        name,
+        firstname,
+        keccakIdentity,
+        citizenship,
+         startTime,
+         endTime,
+         passportId,
+         citizenAddress
+         );
+    }
+
+    function setEncryptIdentity(bool encrypt ) public onlyOwner{
+        encryptIdentity = encrypt;
+    }
+    function getEncryptStatut(address address_) public onlyOwner returns(bool){
+        return encryptIdentity;
     }
     function getPassportName() public view returns(string memory){
         return _passportName;

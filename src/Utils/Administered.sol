@@ -6,14 +6,15 @@ import "openzeppelin-contracts/contracts/access/AccessControl.sol";
 
 /**
  * @title Administered
- * @author Alberto Cuesta Canada
+ * @author Mathieu Genty
+ * @author  Alberto Cuesta Canada
  * @notice Implements Admin and User roles.
- */
+ **/
 contract Administered is AccessControl {
     bytes32 public constant USER_ROLE = keccak256("USER");
 
     /// @dev Add `root` to the admin role as a member.
-    constructor (address root) public {
+    constructor (address root) {
         _setupRole(DEFAULT_ADMIN_ROLE, root);
         _setRoleAdmin(USER_ROLE, DEFAULT_ADMIN_ROLE);
     }
