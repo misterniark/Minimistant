@@ -208,27 +208,18 @@ contract City is  Ownable, Pausable, IsStarted {
         address
     ) {
         
-        CitizenIdcard memory citizenInfos;
-        citizenInfos = citizenRegistry[_citizen_address];
-        string memory name = citizenInfos.firstname;
-        string memory firstname = citizenInfos.name;
-        uint256  keccakIdentity = citizenInfos.keccakIdentity;
-        string memory citizenship = citizenInfos.citizenship;
-        uint256 startTime = citizenInfos.startTime;
-        uint256 endTime = citizenInfos.endTime;
-        uint256 passportId = citizenInfos.passportId;
-        address citizenAddress = citizenInfos.citizenAddress;
+        CitizenIdcard memory citizenInfos = citizenRegistry[_citizen_address];
 
-       return (  
-        name,
-        firstname,
-        keccakIdentity,
-        citizenship,
-         startTime,
-         endTime,
-         passportId,
-         citizenAddress
-         );
+       return (
+        citizenInfos.name,
+        citizenInfos.firstname,
+        citizenInfos.keccakIdentity,
+        citizenInfos.citizenship,
+        citizenInfos.startTime,
+        citizenInfos.endTime,
+        citizenInfos.passportId,
+        citizenInfos.citizenAddress
+        );
     }
 
     function setEncryptIdentity(bool encrypt ) public onlyOwner{

@@ -162,7 +162,7 @@ contract CityTest is BaseSetup {
         assertEq(name, '');
         uint256 hashing = uint256(keccak256(abi.encode("Mathieu", "Genty", owner)));
 
-       // assertEq(keccakIdentity, 'hashing');
+        assertEq(keccakIdentity, hashing);
 
     }
     // (string memory name,
